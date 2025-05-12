@@ -15,6 +15,8 @@ Este proyecto es una aplicación web para gestionar tareas. Utiliza React, TypeS
 ## 📦 Instalación
 
 1. Clona el repositorio:
+   Se debe utilizar la rama:
+    dev
 
 ``bash
 git clone [https://github.com/tuusuario/tu-repo-frontend.git](https://github.com/AlejandroSTapia/To-Do.git)
