@@ -3,6 +3,8 @@ import { getTasks, createTask, updateTask, deleteTask } from './api/tasksApi';
 import type { Task } from './types/task';
 import { TaskForm } from './components/TaskForm';
 import { TaskItem } from './components/TaskItem';
+import { ToastAlert } from './components/ToastAlert';
+
 
 function App() {
   const [Tasks, setTasks] = useState<Task[]>([]);
@@ -10,8 +12,8 @@ function App() {
 
   const formRef = useRef<HTMLDivElement>(null);
 
-  const [alertMessage, setAlertMessage] = useState<string | null>(null);
-const [alertType, setAlertType] = useState<'success' | 'danger' | 'info'>('success');
+const [alertMessage, setAlertMessage] = useState<string | null>(null);
+const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('success');
 
   
   const handleEdit = (task: Task) => {
@@ -27,18 +29,20 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'info'>('succe
   const handleSave = async (Task: Task) => {
     if (Task.IdTask === 0) {
       await createTask(Task);
-      showAlert("Tarea creada exitosamente", "success");
+            setAlertMessage('Tarea creada con éxito!');
+      setAlertType('success');
     } else {
       await updateTask(Task.IdTask, Task);
-      showAlert("Tarea actualizada correctamente", "info");
+       setAlertMessage('Tarea actualizada con éxito!');
+      setAlertType('success');
     }
     fetchTasks();
   };
 
   const handleDelete = async (IdTask: number) => {
     await deleteTask(IdTask);
-      showAlert("Tarea eliminada", "danger");
-    fetchTasks();
+     setAlertMessage('Tarea eliminada correctamente.');
+    setAlertType('warning');
   };
 
   const handleToggle = async (IdTask: number) => {
@@ -49,14 +53,14 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'info'>('succe
     }
   };
 
-  const showAlert = (message: string, type: 'success' | 'danger' | 'info' = 'success') => {
-  setAlertMessage(message);
-  setAlertType(type);
-
-  setTimeout(() => {
-    setAlertMessage(null); // Ocultar después de 3 segundos
-  }, 3000);
-};
+useEffect(() => {
+  if (alertMessage) {
+    const timeout = setTimeout(() => {
+      setAlertMessage(null);
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }
+}, [alertMessage]);
 
   useEffect(() => {
     fetchTasks();
@@ -68,14 +72,15 @@ useEffect(() => {
 
 
   return (
+    <>
+  <ToastAlert
+    message={alertMessage}
+    type={alertType}
+    onClose={() => setAlertMessage(null)}
+  />
+
     <div className="container mt-5" ref={formRef}>
       <h1>Tareas</h1>
-      
-      {alertMessage && (
-      <div className={`alert alert-${alertType} alert-dismissible fade show`} role="alert">
-        {alertMessage}
-      </div>
-    )}
 
       <TaskForm onSave={handleSave} editingTask={editingTask} />
       <div className="mt-4">
@@ -90,6 +95,7 @@ useEffect(() => {
         ))}
       </div>
     </div>
+    </>
   );
 }
 
