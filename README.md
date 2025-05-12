@@ -10,7 +10,7 @@ Este proyecto es una aplicación web para gestionar tareas. Utiliza React, TypeS
 - TypeScript
 - Vite
 - Bootstrap (via npm)
-- Fetch API
+- Fetch API con axios
 
 ## 📦 Instalación
 
