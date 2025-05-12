@@ -22,8 +22,14 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('su
   };
   
   const fetchTasks = async () => {
+    try{
     const data = await getTasks();
     setTasks(data);
+    }
+    catch (e) {
+      setAlertMessage('Error al obtener las tareas.');
+      setAlertType('danger');
+    }
   };
 
   const handleSave = async (Task: Task) => {
@@ -46,9 +52,14 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('su
   };
 
   const handleDelete = async (IdTask: number) => {
+     try {
     await deleteTask(IdTask);
      setAlertMessage('Tarea eliminada correctamente.');
-    setAlertType('warning');
+    setAlertType('success');
+    } catch (e) {
+    setAlertMessage('Error al eliminar la tarea.');
+    setAlertType('danger');
+    }
   };
 
   const handleToggle = async (IdTask: number) => {
