@@ -27,6 +27,7 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('su
   };
 
   const handleSave = async (Task: Task) => {
+     try {
     if (Task.IdTask === 0) {
       await createTask(Task);
             setAlertMessage('Tarea creada con éxito!');
@@ -36,7 +37,12 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('su
        setAlertMessage('Tarea actualizada con éxito!');
       setAlertType('success');
     }
+     setEditingTask(undefined); 
     fetchTasks();
+    } catch (e) {
+    setAlertMessage('Error al guardar la tarea.');
+    setAlertType('danger');
+  }
   };
 
   const handleDelete = async (IdTask: number) => {
