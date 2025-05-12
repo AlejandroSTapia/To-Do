@@ -1,50 +1,66 @@
-import { useState } from "react"
-import type { Note } from "./types/note"
-import { NoteForm } from "./components/NoteForm"
-import { NoteItem } from "./components/NoteItem"
+import { useEffect, useState } from 'react';
+import { getNotes, createNote, updateNote, deleteNote } from './api/notesApi';
+import type { Note } from './types/note';
+import { NoteForm } from './components/NoteForm';
+import { NoteItem } from './components/NoteItem';
 
 function App() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [editingNote, setEditingNote] = useState<Note | undefined>(undefined)
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [editingNote, setEditingNote] = useState<Note | undefined>(undefined);
 
-  const saveNote = (note: Note) => {
-    setNotes((prev) =>
-      prev.some(n => n.id === note.id)
-        ? prev.map(n => n.id === note.id ? note : n)
-        : [...prev, note]
-    )
-    setEditingNote(undefined)
-  }
+  const fetchNotes = async () => {
+    const data = await getNotes();
+    setNotes(data);
+  };
 
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter(n => n.id !== id))
-  }
+  const handleSave = async (note: Note) => {
+    if (note.IdNote === 0) {
+      await createNote(note);
+    } else {
+      await updateNote(note.IdNote, note);
+    }
+    fetchNotes();
+  };
 
-  const toggleCompleted = (id: number) => {
-    setNotes(notes.map(n =>
-      n.id === id ? { ...n, completed: !n.completed, updated_at: new Date() } : n
-    ))
-  }
+  const handleDelete = async (IdNote: number) => {
+    await deleteNote(IdNote);
+    fetchNotes();
+  };
+
+  const handleToggle = async (IdNote: number) => {
+    const note = notes.find((n) => n.IdNote === IdNote);
+    if (note) {
+      await updateNote(IdNote, { ...note, Completed: !note.Completed });
+      fetchNotes();
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+useEffect(() => {
+  console.log("Notas cargadas:", notes);
+}, [notes]);
+
 
   return (
-    <div className="container py-5">
-      <h2 className="text-center mb-4">🗒️ Mis Notas</h2>
-      <NoteForm onSave={saveNote} editingNote={editingNote} />
-      {notes.length === 0 ? (
-        <p className="text-center text-muted">No hay notas todavía.</p>
-      ) : (
-        notes.map(note => (
+    <div className="container mt-5">
+      <h1>Notas</h1>
+      <NoteForm onSave={handleSave} editingNote={editingNote} />
+      <div className="mt-4">
+        {notes.map((note) => (
           <NoteItem
-            key={note.id}
+            key={note.IdNote}
             note={note}
-            onDelete={deleteNote}
+            onDelete={handleDelete}
             onEdit={setEditingNote}
-            onToggle={toggleCompleted}
+            onToggle={handleToggle}
           />
-        ))
-      )}
+        ))}
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

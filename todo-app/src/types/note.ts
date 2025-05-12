@@ -1,8 +1,8 @@
 export interface Note {
-  id: number
-  title: string
-  description?: string
-  completed: boolean
-  created_at?: Date
+  IdNote: number
+  Title: string
+  Description?: string
+  Completed: boolean
+  CreationDate?: Date
   updated_at?: Date
 }

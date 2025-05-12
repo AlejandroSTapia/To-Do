@@ -1,59 +1,62 @@
-import { useState, useEffect } from "react"
-import type { Note } from "../types/note"
+import { useEffect, useState } from "react";
+import type { Note } from "../types/note";
 
-interface Props {
-  onSave: (note: Note) => void
-  editingNote?: Note
-}
+type Props = {
+  onSave: (note: Note) => void;
+  editingNote?: Note;
+};
 
-export const NoteForm = ({ onSave, editingNote }: Props) => {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+export function NoteForm({ onSave, editingNote }: Props) {
+  const [note, setNote] = useState<Note>({
+    IdNote: 0,
+    Title: "",
+    Description: "",
+    Completed: false,
+    CreationDate: new Date(),
+    updated_at: new Date(),
+  });
 
   useEffect(() => {
     if (editingNote) {
-      setTitle(editingNote.title)
-      setDescription(editingNote.description || "")
+      setNote(editingNote);
     }
-  }, [editingNote])
+  }, [editingNote]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return //
-
-    const now = new Date()
-
-    const note: Note = {
-      id: editingNote ? editingNote.id : Date.now(),
-      title,
-      description,
-      completed: editingNote ? editingNote.completed : false,
-      created_at: editingNote?.created_at || now,
-      updated_at: now,
-    }
-
-    onSave(note)
-    setTitle("")
-    setDescription("")
-  }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSave({
+      ...note,
+      updated_at: new Date(),
+    });
+    //limpiar
+    setNote({
+    IdNote: 0,
+    Title: "",
+    Description: "",
+    Completed: false,
+    CreationDate: new Date(),
+    updated_at: new Date(),
+    });
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
+    <form onSubmit={handleSubmit}>
       <input
-        className="form-control mb-2"
+        type="text"
         placeholder="Título"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}//
+        value={note.Title ?? ""}
+        onChange={(e) => setNote({ ...note, Title: e.target.value })}
+        className="form-control mb-2"
       />
       <textarea
+        placeholder="Descripción"
+        value={note.Description ?? ""}
+        onChange={(e) => setNote({ ...note, Description: e.target.value })}
         className="form-control mb-2"
-        placeholder="Descripción (opcional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
       />
-      <button className="btn btn-primary" type="submit">
-        {editingNote ? "Actualizar" : "Agregar Nota"}
+      <button type="submit" className="btn btn-primary">
+        {editingNote ? "Actualizar" : "Guardar"}
       </button>
     </form>
-  )
+  );
 }
