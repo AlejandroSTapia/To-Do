@@ -15,7 +15,8 @@ function App() {
 const [alertMessage, setAlertMessage] = useState<string | null>(null);
 const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('success');
 
-  
+const [searchTerm, setSearchTerm] = useState('');
+
   const handleEdit = (task: Task) => {
     setEditingTask(task);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); // scroll automático
@@ -98,11 +99,29 @@ useEffect(() => {
   />
 
     <div className="container mt-5" ref={formRef}>
-      <h1>Tareas</h1>
+      <h1 className="text-center">Tareas</h1>
 
       <TaskForm onSave={handleSave} editingTask={editingTask} />
       <div className="mt-4">
-        {Tasks.map((Task) => (
+<div className="input-group mb-3">
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Buscar tareas..."
+    aria-label="Buscar tareas"
+    aria-describedby="button-search"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+  <span className="input-group-text" id="button-search">
+    🔍
+  </span>
+</div>
+
+        {Tasks.filter(Task =>
+  Task.Title.toLowerCase().includes(searchTerm.toLowerCase())
+).map((Task) => (
+
           <TaskItem
             key={Task.IdTask}
             Task={Task}
