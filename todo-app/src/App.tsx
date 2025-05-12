@@ -10,6 +10,9 @@ function App() {
 
   const formRef = useRef<HTMLDivElement>(null);
 
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
+const [alertType, setAlertType] = useState<'success' | 'danger' | 'info'>('success');
+
   
   const handleEdit = (task: Task) => {
     setEditingTask(task);
@@ -24,14 +27,17 @@ function App() {
   const handleSave = async (Task: Task) => {
     if (Task.IdTask === 0) {
       await createTask(Task);
+      showAlert("Tarea creada exitosamente", "success");
     } else {
       await updateTask(Task.IdTask, Task);
+      showAlert("Tarea actualizada correctamente", "info");
     }
     fetchTasks();
   };
 
   const handleDelete = async (IdTask: number) => {
     await deleteTask(IdTask);
+      showAlert("Tarea eliminada", "danger");
     fetchTasks();
   };
 
@@ -42,6 +48,15 @@ function App() {
       fetchTasks();
     }
   };
+
+  const showAlert = (message: string, type: 'success' | 'danger' | 'info' = 'success') => {
+  setAlertMessage(message);
+  setAlertType(type);
+
+  setTimeout(() => {
+    setAlertMessage(null); // Ocultar después de 3 segundos
+  }, 3000);
+};
 
   useEffect(() => {
     fetchTasks();
@@ -55,6 +70,13 @@ useEffect(() => {
   return (
     <div className="container mt-5" ref={formRef}>
       <h1>Tareas</h1>
+      
+      {alertMessage && (
+      <div className={`alert alert-${alertType} alert-dismissible fade show`} role="alert">
+        {alertMessage}
+      </div>
+    )}
+
       <TaskForm onSave={handleSave} editingTask={editingTask} />
       <div className="mt-4">
         {Tasks.map((Task) => (
