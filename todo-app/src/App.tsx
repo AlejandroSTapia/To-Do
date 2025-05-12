@@ -54,8 +54,9 @@ const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('su
   const handleDelete = async (IdTask: number) => {
      try {
     await deleteTask(IdTask);
-     setAlertMessage('Tarea eliminada correctamente.');
-    setAlertType('success');
+     setAlertMessage('Tarea eliminada con éxito.');
+     setAlertType('success');
+     fetchTasks();
     } catch (e) {
     setAlertMessage('Error al eliminar la tarea.');
     setAlertType('danger');
