@@ -1,5 +1,5 @@
-export interface Note {
-  IdNote: number
+export interface Task {
+  IdTask: number
   Title: string
   Description?: string
   Completed: boolean

@@ -1,60 +1,68 @@
-import { useEffect, useState } from 'react';
-import { getNotes, createNote, updateNote, deleteNote } from './api/notesApi';
-import type { Note } from './types/note';
-import { NoteForm } from './components/NoteForm';
-import { NoteItem } from './components/NoteItem';
+import { useEffect, useState,useRef } from 'react';
+import { getTasks, createTask, updateTask, deleteTask } from './api/tasksApi';
+import type { Task } from './types/task';
+import { TaskForm } from './components/TaskForm';
+import { TaskItem } from './components/TaskItem';
 
 function App() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [editingNote, setEditingNote] = useState<Note | undefined>(undefined);
+  const [Tasks, setTasks] = useState<Task[]>([]);
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
-  const fetchNotes = async () => {
-    const data = await getNotes();
-    setNotes(data);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); // scroll automático
+  };
+  
+  const fetchTasks = async () => {
+    const data = await getTasks();
+    setTasks(data);
   };
 
-  const handleSave = async (note: Note) => {
-    if (note.IdNote === 0) {
-      await createNote(note);
+  const handleSave = async (Task: Task) => {
+    if (Task.IdTask === 0) {
+      await createTask(Task);
     } else {
-      await updateNote(note.IdNote, note);
+      await updateTask(Task.IdTask, Task);
     }
-    fetchNotes();
+    fetchTasks();
   };
 
-  const handleDelete = async (IdNote: number) => {
-    await deleteNote(IdNote);
-    fetchNotes();
+  const handleDelete = async (IdTask: number) => {
+    await deleteTask(IdTask);
+    fetchTasks();
   };
 
-  const handleToggle = async (IdNote: number) => {
-    const note = notes.find((n) => n.IdNote === IdNote);
-    if (note) {
-      await updateNote(IdNote, { ...note, Completed: !note.Completed });
-      fetchNotes();
+  const handleToggle = async (IdTask: number) => {
+    const Task = Tasks.find((n) => n.IdTask === IdTask);
+    if (Task) {
+      await updateTask(IdTask, { ...Task, Completed: !Task.Completed });
+      fetchTasks();
     }
   };
 
   useEffect(() => {
-    fetchNotes();
+    fetchTasks();
   }, []);
 
 useEffect(() => {
-  console.log("Notas cargadas:", notes);
-}, [notes]);
+  console.log("Notas cargadas:", Tasks);
+}, [Tasks]);
 
 
   return (
-    <div className="container mt-5">
-      <h1>Notas</h1>
-      <NoteForm onSave={handleSave} editingNote={editingNote} />
+    <div className="container mt-5" ref={formRef}>
+      <h1>Tareas</h1>
+      <TaskForm onSave={handleSave} editingTask={editingTask} />
       <div className="mt-4">
-        {notes.map((note) => (
-          <NoteItem
-            key={note.IdNote}
-            note={note}
+        {Tasks.map((Task) => (
+          <TaskItem
+            key={Task.IdTask}
+            Task={Task}
             onDelete={handleDelete}
-            onEdit={setEditingNote}
+            onEdit={handleEdit}
             onToggle={handleToggle}
           />
         ))}

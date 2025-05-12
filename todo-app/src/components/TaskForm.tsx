@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import type { Note } from "../types/note";
+import type { Task } from "../types/task";
 
 type Props = {
-  onSave: (note: Note) => void;
-  editingNote?: Note;
+  onSave: (Task: Task) => void;
+  editingTask?: Task;
 };
 
-export function NoteForm({ onSave, editingNote }: Props) {
-  const [note, setNote] = useState<Note>({
-    IdNote: 0,
+export function TaskForm({ onSave, editingTask }: Props) {
+  const [Task, setTask] = useState<Task>({
+    IdTask: 0,
     Title: "",
     Description: "",
     Completed: false,
@@ -17,20 +17,20 @@ export function NoteForm({ onSave, editingNote }: Props) {
   });
 
   useEffect(() => {
-    if (editingNote) {
-      setNote(editingNote);
+    if (editingTask) {
+      setTask(editingTask);
     }
-  }, [editingNote]);
+  }, [editingTask]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSave({
-      ...note,
+      ...Task,
       updated_at: new Date(),
     });
     //limpiar
-    setNote({
-    IdNote: 0,
+    setTask({
+    IdTask: 0,
     Title: "",
     Description: "",
     Completed: false,
@@ -44,18 +44,18 @@ export function NoteForm({ onSave, editingNote }: Props) {
       <input
         type="text"
         placeholder="Título"
-        value={note.Title ?? ""}
-        onChange={(e) => setNote({ ...note, Title: e.target.value })}
+        value={Task.Title ?? ""}
+        onChange={(e) => setTask({ ...Task, Title: e.target.value })}
         className="form-control mb-2"
       />
       <textarea
         placeholder="Descripción"
-        value={note.Description ?? ""}
-        onChange={(e) => setNote({ ...note, Description: e.target.value })}
+        value={Task.Description ?? ""}
+        onChange={(e) => setTask({ ...Task, Description: e.target.value })}
         className="form-control mb-2"
       />
       <button type="submit" className="btn btn-primary">
-        {editingNote ? "Actualizar" : "Guardar"}
+        {editingTask ? "Actualizar" : "Guardar"}
       </button>
     </form>
   );
