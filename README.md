@@ -10,11 +10,13 @@ Este proyecto es una aplicación web para gestionar tareas. Utiliza React, TypeS
 - TypeScript
 - Vite
 - Bootstrap (via npm)
-- Fetch API
+- Fetch API con axios
 
 ## 📦 Instalación
 
 1. Clona el repositorio:
+   Se debe utilizar la rama:
+    dev
 
 ``bash
 git clone [https://github.com/tuusuario/tu-repo-frontend.git](https://github.com/AlejandroSTapia/To-Do.git)
