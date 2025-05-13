@@ -64,7 +64,8 @@ const [searchTerm, setSearchTerm] = useState('');
     }
   };
 
-  const handleToggle = async (IdTask: number) => {
+  //completed
+  const handleToggle = async (IdTask: number) => { 
     const Task = Tasks.find((n) => n.IdTask === IdTask);
     if (Task) {
       await updateTask(IdTask, { ...Task, Completed: !Task.Completed });
@@ -85,9 +86,6 @@ useEffect(() => {
     fetchTasks();
   }, []);
 
-useEffect(() => {
-  console.log("Notas cargadas:", Tasks);
-}, [Tasks]);
 
 
   return (
