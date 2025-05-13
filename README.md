@@ -28,7 +28,7 @@ cd todo-app
 3. Ejecuta el proyecto
  - npm run dev
 
-4. Asegúrate de que el backend esté corriendo (por defecto en http://localhost:5173)
+4. Asegúrese de que el backend esté corriendo (por defecto en http://localhost:5173)
 
 ## 📋 Funcionalidades
 
