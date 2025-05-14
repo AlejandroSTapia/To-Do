@@ -1,50 +1,137 @@
-import { useState } from "react"
-import type { Note } from "./types/note"
-import { NoteForm } from "./components/NoteForm"
-import { NoteItem } from "./components/NoteItem"
+import { useEffect, useState,useRef } from 'react';
+import { getTasks, createTask, updateTask, deleteTask } from './api/tasksApi';
+import type { Task } from './types/task';
+import { TaskForm } from './components/TaskForm';
+import { TaskItem } from './components/TaskItem';
+import { ToastAlert } from './components/ToastAlert';
+
 
 function App() {
-  const [notes, setNotes] = useState<Note[]>([])
-  const [editingNote, setEditingNote] = useState<Note | undefined>(undefined)
+  const [Tasks, setTasks] = useState<Task[]>([]);
+  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
 
-  const saveNote = (note: Note) => {
-    setNotes((prev) =>
-      prev.some(n => n.id === note.id)
-        ? prev.map(n => n.id === note.id ? note : n)
-        : [...prev, note]
-    )
-    setEditingNote(undefined)
-  }
+  const formRef = useRef<HTMLDivElement>(null);
 
-  const deleteNote = (id: number) => {
-    setNotes(notes.filter(n => n.id !== id))
-  }
+const [alertMessage, setAlertMessage] = useState<string | null>(null);
+const [alertType, setAlertType] = useState<'success' | 'danger' | 'warning'>('success');
 
-  const toggleCompleted = (id: number) => {
-    setNotes(notes.map(n =>
-      n.id === id ? { ...n, completed: !n.completed, updated_at: new Date() } : n
-    ))
+const [searchTerm, setSearchTerm] = useState('');
+
+  const handleEdit = (task: Task) => {
+    setEditingTask(task);
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); // scroll automático
+  };
+  
+  const fetchTasks = async () => {
+    try{
+    const data = await getTasks();
+    setTasks(data);
+    }
+    catch (e) {
+      setAlertMessage('Error al obtener las tareas.');
+      setAlertType('danger');
+    }
+  };
+
+  const handleSave = async (Task: Task) => {
+     try {
+    if (Task.IdTask === 0) {
+      await createTask(Task);
+            setAlertMessage('Tarea creada con éxito!');
+      setAlertType('success');
+    } else {
+      await updateTask(Task.IdTask, Task);
+       setAlertMessage('Tarea actualizada con éxito!');
+      setAlertType('success');
+    }
+     setEditingTask(undefined); 
+    fetchTasks();
+    } catch (e) {
+    setAlertMessage('Error al guardar la tarea.');
+    setAlertType('danger');
   }
+  };
+
+  const handleDelete = async (IdTask: number) => {
+     try {
+    await deleteTask(IdTask);
+     setAlertMessage('Tarea eliminada con éxito.');
+     setAlertType('success');
+     fetchTasks();
+    } catch (e) {
+    setAlertMessage('Error al eliminar la tarea.');
+    setAlertType('danger');
+    }
+  };
+
+  //completed
+  const handleToggle = async (IdTask: number) => { 
+    const Task = Tasks.find((n) => n.IdTask === IdTask);
+    if (Task) {
+      await updateTask(IdTask, { ...Task, Completed: !Task.Completed });
+      fetchTasks();
+    }
+  };
+
+useEffect(() => {
+  if (alertMessage) {
+    const timeout = setTimeout(() => {
+      setAlertMessage(null);
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }
+}, [alertMessage]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+
 
   return (
-    <div className="container py-5">
-      <h2 className="text-center mb-4">🗒️ Mis Notas</h2>
-      <NoteForm onSave={saveNote} editingNote={editingNote} />
-      {notes.length === 0 ? (
-        <p className="text-center text-muted">No hay notas todavía.</p>
-      ) : (
-        notes.map(note => (
-          <NoteItem
-            key={note.id}
-            note={note}
-            onDelete={deleteNote}
-            onEdit={setEditingNote}
-            onToggle={toggleCompleted}
+    <>
+  <ToastAlert
+    message={alertMessage}
+    type={alertType}
+    onClose={() => setAlertMessage(null)}
+  />
+
+    <div className="container mt-5" ref={formRef}>
+      <h1 className="text-center">Tareas</h1>
+
+      <TaskForm onSave={handleSave} editingTask={editingTask} />
+      <div className="mt-4">
+<div className="input-group mb-3">
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Buscar tareas..."
+    aria-label="Buscar tareas"
+    aria-describedby="button-search"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+  <span className="input-group-text" id="button-search">
+    🔍
+  </span>
+</div>
+
+        {Tasks.filter(Task =>
+  Task.Title.toLowerCase().includes(searchTerm.toLowerCase())
+).map((Task) => (
+
+          <TaskItem
+            key={Task.IdTask}
+            Task={Task}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onToggle={handleToggle}
           />
-        ))
-      )}
+        ))}
+      </div>
     </div>
-  )
+    </>
+  );
 }
 
-export default App
+export default App;
