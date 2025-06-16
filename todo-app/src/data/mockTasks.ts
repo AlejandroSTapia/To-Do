@@ -17,6 +17,7 @@ export const mockTasks: Task[] = [
         "CreationDate": undefined,
         "updated_at": new Date("2025-05-12T17:03:24.703Z")
     },
+    
     {
         "IdTask": 6,
         "Title": "Prueba 8",
