@@ -54,11 +54,16 @@ const handleSave = async (task: Task) => {
   try {
     if (task.IdTask === 0) {
       // Simula agregar
-      setTasks(prev => [...prev, { ...task, IdTask: Math.max(...prev.map(t => t.IdTask)) + 1 }]);
+      // setTasks(prev => [...prev, { ...task, IdTask: Math.max(...prev.map(t => t.IdTask)) + 1 }]);
+      const newId = Tasks.length > 0 ? Math.max(...Tasks.map(t => t.IdTask)) + 1 : 1;
+      const newTask = { ...task, IdTask: newId };
+
+      setTasks([newTask, ...Tasks]);
       setAlertMessage('Tarea creada con éxito!');
     } else {
       // Simula actualizar
-      setTasks(prev => prev.map(t => t.IdTask === task.IdTask ? { ...task } : t));
+      // setTasks(prev => prev.map(t => t.IdTask === task.IdTask ? { ...task } : t));
+       setTasks(Tasks.map(t => t.IdTask === task.IdTask ? task : t));
       setAlertMessage('Tarea actualizada con éxito!');
     }
     setAlertType('success');
