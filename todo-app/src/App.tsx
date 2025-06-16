@@ -6,6 +6,8 @@ import { TaskForm } from './components/TaskForm';
 import { TaskItem } from './components/TaskItem';
 import { ToastAlert } from './components/ToastAlert';
 
+import { mockTasks } from './data/mockTasks'; 
+
 
 function App() {
   const [Tasks, setTasks] = useState<Task[]>([]);
@@ -23,56 +25,106 @@ const [searchTerm, setSearchTerm] = useState('');
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); // scroll automático
   };
   
-  const fetchTasks = async () => {
-    try{
-    const data = await getTasks();
-    setTasks(data);
-    }
-    catch (e) {
-      setAlertMessage('Error al obtener las tareas.');
-      setAlertType('danger');
-    }
-  };
+  // const fetchTasks = async () => {
+  //   try{
+  //   const data = await getTasks();
+  //   setTasks(data);
+  //   }
+  //   catch (e) {
+  //     setAlertMessage('Error al obtener las tareas.');
+  //     setAlertType('danger');
+  //   }
+  // };
 
-  const handleSave = async (Task: Task) => {
-     try {
-    if (Task.IdTask === 0) {
-      await createTask(Task);
-            setAlertMessage('Tarea creada con éxito!');
-      setAlertType('success');
+  const fetchTasks = async () => {
+  try {
+    // Simula un fetch con datos en duro
+    setTasks(mockTasks);
+  } catch (e) {
+    setAlertMessage('Error al obtener las tareas.');
+    setAlertType('danger');
+  }
+};
+
+
+
+
+//
+const handleSave = async (task: Task) => {
+  try {
+    if (task.IdTask === 0) {
+      // Simula agregar
+      setTasks(prev => [...prev, { ...task, IdTask: Math.max(...prev.map(t => t.IdTask)) + 1 }]);
+      setAlertMessage('Tarea creada con éxito!');
     } else {
-      await updateTask(Task.IdTask, Task);
-       setAlertMessage('Tarea actualizada con éxito!');
-      setAlertType('success');
+      // Simula actualizar
+      setTasks(prev => prev.map(t => t.IdTask === task.IdTask ? { ...task } : t));
+      setAlertMessage('Tarea actualizada con éxito!');
     }
-     setEditingTask(undefined); 
-    fetchTasks();
-    } catch (e) {
+    setAlertType('success');
+    setEditingTask(undefined);
+  } catch (e) {
     setAlertMessage('Error al guardar la tarea.');
     setAlertType('danger');
   }
-  };
+};
 
-  const handleDelete = async (IdTask: number) => {
-     try {
-    await deleteTask(IdTask);
-     setAlertMessage('Tarea eliminada con éxito.');
-     setAlertType('success');
-     fetchTasks();
-    } catch (e) {
+const handleDelete = async (IdTask: number) => {
+  try {
+    setTasks(prev => prev.filter(t => t.IdTask !== IdTask));
+    setAlertMessage('Tarea eliminada con éxito.');
+    setAlertType('success');
+  } catch (e) {
     setAlertMessage('Error al eliminar la tarea.');
     setAlertType('danger');
-    }
-  };
+  }
+};
 
-  //completed
-  const handleToggle = async (IdTask: number) => { 
-    const Task = Tasks.find((n) => n.IdTask === IdTask);
-    if (Task) {
-      await updateTask(IdTask, { ...Task, Completed: !Task.Completed });
-      fetchTasks();
-    }
-  };
+const handleToggle = async (IdTask: number) => {
+  setTasks(prev => prev.map(t =>
+    t.IdTask === IdTask ? { ...t, Completed: !t.Completed } : t
+  ));
+};
+
+  // const handleSave = async (Task: Task) => {
+  //    try {
+  //   if (Task.IdTask === 0) {
+  //     await createTask(Task);
+  //           setAlertMessage('Tarea creada con éxito!');
+  //     setAlertType('success');
+  //   } else {
+  //     await updateTask(Task.IdTask, Task);
+  //      setAlertMessage('Tarea actualizada con éxito!');
+  //     setAlertType('success');
+  //   }
+  //    setEditingTask(undefined); 
+  //   fetchTasks();
+  //   } catch (e) {
+  //   setAlertMessage('Error al guardar la tarea.');
+  //   setAlertType('danger');
+  // }
+  // };
+
+  // const handleDelete = async (IdTask: number) => {
+  //    try {
+  //   await deleteTask(IdTask);
+  //    setAlertMessage('Tarea eliminada con éxito.');
+  //    setAlertType('success');
+  //    fetchTasks();
+  //   } catch (e) {
+  //   setAlertMessage('Error al eliminar la tarea.');
+  //   setAlertType('danger');
+  //   }
+  // };
+
+  // //completed
+  // const handleToggle = async (IdTask: number) => { 
+  //   const Task = Tasks.find((n) => n.IdTask === IdTask);
+  //   if (Task) {
+  //     await updateTask(IdTask, { ...Task, Completed: !Task.Completed });
+  //     fetchTasks();
+  //   }
+  // };
 
 useEffect(() => {
   if (alertMessage) {
