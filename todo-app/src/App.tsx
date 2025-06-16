@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState,useRef } from 'react';
 import { getTasks, createTask, updateTask, deleteTask } from './api/tasksApi';
 import type { Task } from './types/task';
@@ -95,9 +96,12 @@ useEffect(() => {
     type={alertType}
     onClose={() => setAlertMessage(null)}
   />
+<nav className="navbar navbar-light d-flex justify-content-center" style={{ backgroundColor: "#e6f0ff" }}>
+  <h1 style={{color:"#333333"}}>ToDo List</h1>
+</nav>
 
     <div className="container mt-5" ref={formRef}>
-      <h1 className="text-center">Tareas</h1>
+      
 
       <TaskForm onSave={handleSave} editingTask={editingTask} />
       <div className="mt-4">
