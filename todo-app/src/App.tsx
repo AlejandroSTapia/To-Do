@@ -8,6 +8,8 @@ import { ToastAlert } from './components/ToastAlert';
 
 import { mockTasks } from './data/mockTasks'; 
 
+import ChatWithUpload from "./components/ChatWithUpload"; // <-- NUEVO
+
 
 function App() {
   const [Tasks, setTasks] = useState<Task[]>([]);
@@ -191,6 +193,8 @@ useEffect(() => {
         ))}
       </div>
     </div>
+          {/* Chat flotante que acepta imágenes/archivos y envía al webhook de n8n */}
+      <ChatWithUpload />
     </>
   );
 }
