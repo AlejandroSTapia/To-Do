@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 
 const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
+console.log("WEBHOOK_URL en runtime:", WEBHOOK_URL);
 
 export default function ChatWithUpload() {
   const [open, setOpen] = useState(false);
