@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 
-const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL || "https://n8n.tu-dominio.com/webhook/chat-upload";
+const WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
 export default function ChatWithUpload() {
   const [open, setOpen] = useState(false);
